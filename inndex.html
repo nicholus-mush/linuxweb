@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Linux Admin Bootcamp | Complete Learning Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f1f5f9;
+            color: #0f172a;
+            line-height: 1.5;
+        }
+
+        .app-header {
+            background: #0f172a;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .logo p {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .progress-stats {
+            background: #1e293b;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        nav {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.75rem 2rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            overflow-x: auto;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #475569;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .nav-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .nav-btn:hover:not(.active) {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .page {
+            display: none;
+            animation: fade 0.25s ease;
+        }
+
+        .page.active-page {
+            display: block;
+        }
+
+        @keyframes fade {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .week-card,
+        .card {
+            background: white;
+            border-radius: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .week-header {
+            background: #f8fafc;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .days-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 1.5rem;
+        }
+
+        .day-card {
+            background: #ffffff;
+            border-radius: 1rem;
+            border: 1px solid #e2e8f0;
+            width: calc(14% - 1rem);
+            min-width: 160px;
+            flex: 1 1 160px;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .day-card.locked {
+            opacity: 0.6;
+            background: #f9f9fb;
+            cursor: not-allowed;
+        }
+
+        .day-card.unlocked {
+            border-left: 5px solid #3b82f6;
+        }
+
+        .day-card.completed {
+            border-left: 5px solid #10b981;
+            background: #f0fdf4;
+        }
+
+        .detail-panel,
+        .terminal-panel,
+        .quiz-panel {
+            background: white;
+            border-radius: 1.5rem;
+            margin-top: 2rem;
+            border: 1px solid #e2e8f0;
+            padding: 1.8rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .exercise-box {
+            background: #f8fafc;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .code-block {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            font-family: monospace;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        button {
+            background: #3b82f6;
+            border: none;
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        .complete-btn {
+            background: #10b981;
+        }
+
+        .terminal {
+            background: #0f172a;
+            color: #10b981;
+            font-family: 'Courier New', monospace;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            height: 300px;
+            overflow-y: auto;
+        }
+
+        .terminal-input {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .terminal-input input {
+            flex: 1;
+            background: #1e293b;
+            color: #10b981;
+            border: 1px solid #334155;
+            font-family: monospace;
+        }
+
+        .quiz-option {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background: #f1f5f9;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+
+        .quiz-option:hover {
+            background: #e2e8f0;
+        }
+
+        .heatmap {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .heatmap-day {
+            aspect-ratio: 1;
+            background: #e2e8f0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .heatmap-day.completed {
+            background: #10b981;
+            color: white;
+        }
+
+        @media (max-width: 800px) {
+            .days-grid {
+                gap: 0.8rem;
+            }
+
+            .day-card {
+                min-width: 130px;
+            }
+
+            nav {
+                gap: 0.3rem;
+            }
+
+            .nav-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-header">
+        <div class="logo">
+            <h1>🐧 Linux Admin Bootcamp</h1>
+            <p>1.5 months • daily drills • projects • capstone</p>
+        </div>
+        <div class="progress-stats" id="globalStats">📊 Progress: 0%</div>
+    </div>
+
+    <nav>
+        <button class="nav-btn active" data-page="dashboard">📅 Dashboard</button>
+        <button class="nav-btn" data-page="weeklyprojects">🏆 Weekly Projects</button>
+        <button class="nav-btn" data-page="capstone">🚀 Capstone</button>
+        <button class="nav-btn" data-page="terminal">🧪 Terminal Sandbox</button>
+        <button class="nav-btn" data-page="analytics">📊 Analytics</button>
+        <button class="nav-btn" data-page="community">🤝 Community</button>
+        <button class="nav-btn" data-page="quizzes">📝 Quizzes</button>
+        <button class="nav-btn" data-page="lab">💾 Lab Setup</button>
+        <button class="nav-btn" data-page="troubleshooting">🎯 Troubleshooting</button>
+        <button class="nav-btn" data-page="cheatsheet">📎 Cheat Sheet</button>
+        <button class="nav-btn" data-page="resources">📚 Resources</button>
+    </nav>
+
+    <div class="container">
+        <!-- DASHBOARD PAGE -->
+        <div id="dashboardPage" class="page active-page">
+            <div id="weeksContainer"></div>
+            <div id="dayDetailPanel" class="detail-panel">
+                <h3 id="detailTitle">✨ Select a day to start learning</h3>
+                <div id="detailContent">Click any unlocked day card above to see the daily exercise, evening task, and
+                    materials.</div>
+            </div>
+        </div>
+
+        <!-- WEEKLY PROJECTS PAGE -->
+        <div id="weeklyprojectsPage" class="page">
+            <h2>🏆 Weekly Integration Projects</h2>
+            <div id="weeklyProjectsList"></div>
+        </div>
+
+        <!-- CAPSTONE PAGE -->
+        <div id="capstonePage" class="page">
+            <h2>🚀 Production-Ready Linux Server – Capstone Project</h2>
+            <div class="detail-panel">
+                <h3>📋 Requirements Checklist</h3>
+                <ul id="capstoneChecklist">
+                    <li><input type="checkbox" class="capstone-check"> Two VMs / EC2 instances</li>
+                    <li><input type="checkbox" class="capstone-check"> SSH key-only & firewall rules</li>
+                    <li><input type="checkbox" class="capstone-check"> Ansible playbook</li>
+                    <li><input type="checkbox" class="capstone-check"> Flask/PHP app with DB</li>
+                    <li><input type="checkbox" class="capstone-check"> Log rotation + monitoring</li>
+                    <li><input type="checkbox" class="capstone-check"> Automated DB backups</li>
+                    <li><input type="checkbox" class="capstone-check"> Documentation + restore</li>
+                </ul>
+                <button id="resetCapstoneBtn">Reset Capstone Progress</button>
+            </div>
+        </div>
+
+        <!-- TERMINAL SANDBOX PAGE -->
+        <div id="terminalPage" class="page">
+            <h2>🧪 Interactive Terminal Sandbox</h2>
+            <div class="terminal-panel">
+                <div class="terminal" id="terminalOutput">
+                    <div>$ Welcome to Linux Sandbox</div>
+                    <div>$ Try commands like: ls, pwd, echo "hello"</div>
+                    <div>$ Type below and press Enter</div>
+                    <div>$ -------------------------------------------------</div>
+                </div>
+                <div class="terminal-input">
+                    <input type="text" id="terminalCommand" placeholder="Enter Linux command..." style="flex:1">
+                    <button id="runCommand">⏎ Run</button>
+                    <button id="clearTerminal">🗑 Clear</button>
+                </div>
+                <div class="code-block">
+                    💡 Supported commands: ls, pwd, echo, date, whoami, uname, cal, clear (simulated environment)
+                </div>
+            </div>
+        </div>
+
+        <!-- ANALYTICS PAGE -->
+        <div id="analyticsPage" class="page">
+            <h2>📊 Your Learning Analytics</h2>
+            <div class="week-card">
+                <div class="week-header"><span>🔥 Daily Completion Heatmap (Last 28 days)</span></div>
+                <div class="days-grid">
+                    <div id="heatmapContainer" class="heatmap"></div>
+                </div>
+            </div>
+            <div class="detail-panel">
+                <h3>📈 Statistics</h3>
+                <div id="analyticsStats"></div>
+                <div class="code-block">
+                    💪 Keep the streak alive! Complete all days to become job-ready.
+                </div>
+            </div>
+        </div>
+
+        <!-- COMMUNITY HUB -->
+        <div id="communityPage" class="page">
+            <h2>🤝 Community & Study Groups</h2>
+            <div class="week-card">
+                <div class="week-header"><span>👥 Active Learners Leaderboard</span></div>
+                <div class="days-grid" style="display:block">
+                    <div id="leaderboard"></div>
+                </div>
+            </div>
+            <div class="detail-panel">
+                <h3>💬 Discussion Prompts</h3>
+                <div class="exercise-box">🔹 Week 1: What was the most surprising Linux command you learned?</div>
+                <div class="exercise-box">🔹 Week 2: Share your web server setup screenshot!</div>
+                <div class="exercise-box">🔹 Week 3: How did you harden your SSH configuration?</div>
+                <div class="exercise-box">🔹 Week 4: Docker or VM - which do you prefer and why?</div>
+            </div>
+        </div>
+
+        <!-- QUIZZES PAGE -->
+        <div id="quizzesPage" class="page">
+            <h2>📝 Weekly Knowledge Checks</h2>
+            <div id="quizContainer"></div>
+        </div>
+
+        <!-- LAB SETUP GUIDE -->
+        <div id="labPage" class="page">
+            <h2>💾 Virtual Lab Environment Setup</h2>
+            <div class="detail-panel">
+                <h3>🚀 One-Copy Setup Commands</h3>
+                <div class="code-block">
+                    # Install VirtualBox on Ubuntu/Debian<br>
+                    sudo apt update && sudo apt install virtualbox -y<br><br>
+                    # Download Ubuntu Server ISO<br>
+                    wget https://releases.ubuntu.com/22.04/ubuntu-22.04-live-server-amd64.iso<br><br>
+                    # Create VM via command line (VBoxManage)<br>
+                    VBoxManage createvm --name "LinuxLab" --ostype Ubuntu_64 --register<br>
+                    VBoxManage modifyvm "LinuxLab" --memory 2048 --cpus 2<br>
+                    VBoxManage storagectl "LinuxLab" --name "SATA" --add sata --controller IntelAhci<br>
+                    VBoxManage createhd --filename "LinuxLab.vdi" --size 20000<br>
+                    VBoxManage storageattach "LinuxLab" --storagectl "SATA" --port 0 --device 0 --type hdd --medium
+                    "LinuxLab.vdi"<br>
+                    VBoxManage storageattach "LinuxLab" --storagectl "SATA" --port 1 --device 0 --type dvddrive --medium
+                    ubuntu-22.04-live-server-amd64.iso
+                </div>
+                <button id="copyLabCmd">📋 Copy All Commands</button>
+            </div>
+        </div>
+
+        <!-- TROUBLESHOOTING SCENARIOS -->
+        <div id="troubleshootingPage" class="page">
+            <h2>🎯 Real-World Break-Fix Scenarios</h2>
+            <div id="scenarioContainer"></div>
+        </div>
+
+        <!-- CHEAT SHEET GENERATOR -->
+        <div id="cheatsheetPage" class="page">
+            <h2>📎 Custom Linux Cheat Sheet</h2>
+            <div class="detail-panel">
+                <h3>Select topics to include:</h3>
+                <div id="cheatTopics">
+                    <label><input type="checkbox" class="cheat-check" value="file"> 📁 File Commands (ls, cp, mv,
+                        rm)</label><br>
+                    <label><input type="checkbox" class="cheat-check" value="perm"> 🔐 Permissions (chmod,
+                        chown)</label><br>
+                    <label><input type="checkbox" class="cheat-check" value="process"> ⚙️ Processes (ps, top,
+                        kill)</label><br>
+                    <label><input type="checkbox" class="cheat-check" value="net"> 🌐 Networking (ip, ss,
+                        curl)</label><br>
+                    <label><input type="checkbox" class="cheat-check" value="script"> 📜 Bash Scripting (loops,
+                        vars)</label><br>
+                </div>
+                <button id="generateCheatSheet">Generate PDF-style Cheat Sheet</button>
+                <div id="cheatOutput" class="code-block" style="margin-top:1rem; display:none;"></div>
+            </div>
+        </div>
+
+        <!-- RESOURCES PAGE -->
+        <div id="resourcesPage" class="page">
+            <h2>📖 Essential Linux Resources</h2>
+            <div class="exercise-box">🔗 Linux Journey - https://linuxjourney.com/</div>
+            <div class="exercise-box">🎮 OverTheWire Bandit - https://overthewire.org/</div>
+            <div class="exercise-box">📘 ArchWiki - https://wiki.archlinux.org/</div>
+        </div>
+    </div>
+
+    <script>
+        // ========== DATA & STORAGE ==========
+        const weeksData = [
+            {
+                week: 1, name: "Week 1: Linux Fundamentals", startDay: 1,
+                days: [
+                    { day: 1, title: "Terminal & Navigation", topics: "pwd, ls, cd", exercise: "Create directory structure", evening: "Explain absolute paths" },
+                    { day: 2, title: "File Operations", topics: "cp, mv, rm", exercise: "Copy /etc/passwd", evening: "Create 10 files" },
+                    { day: 3, title: "Finding Things", topics: "find, grep", exercise: "Find .conf files", evening: "Find empty files" },
+                    { day: 4, title: "Permissions", topics: "chmod, chown", exercise: "Create user labuser", evening: "Explain 755" },
+                    { day: 5, title: "Filesystem", topics: "/etc, /var", exercise: "Explore /proc", evening: "List logs" },
+                    { day: 6, title: "Processes", topics: "ps, kill", exercise: "Run background job", evening: "Daemon vs fg" },
+                    { day: 7, title: "Weekly Project", topics: "System Info", exercise: "Write sysinfo.sh", evening: "Capture report" }
+                ]
+            },
+            {
+                week: 2, name: "Week 2: Networking & Packages", startDay: 8,
+                days: [
+                    { day: 8, title: "Systemd", topics: "systemctl", exercise: "Check ssh status", evening: "stop vs disable" },
+                    { day: 9, title: "Networking", topics: "ip, ss", exercise: "Find IP, listening ports", evening: "What is socket" },
+                    { day: 10, title: "DNS", topics: "dig, curl", exercise: "dig github.com", evening: "DNS resolution" },
+                    { day: 11, title: "Package Mgmt", topics: "apt/dnf", exercise: "Install htop", evening: "Repositories" },
+                    { day: 12, title: "Disk Mgmt", topics: "df, du", exercise: "Check disk usage", evening: "Mount points" },
+                    { day: 13, title: "Cron", topics: "crontab", exercise: "Hourly backup", evening: "Cron expression" },
+                    { day: 14, title: "Weekly Project", topics: "Web Server", exercise: "Install nginx", evening: "Custom page" }
+                ]
+            },
+            {
+                week: 3, name: "Week 3: Scripting & Security", startDay: 15,
+                days: [
+                    { day: 15, title: "Variables", topics: "$1, read", exercise: "Hello script", evening: "File creation" },
+                    { day: 16, title: "Conditionals", topics: "if", exercise: "Check file exists", evening: "User check" },
+                    { day: 17, title: "Loops", topics: "for, while", exercise: "Create 10 users", evening: "Ping servers" },
+                    { day: 18, title: "SSH Hardening", topics: "keys", exercise: "Disable password auth", evening: "Root login" },
+                    { day: 19, title: "Firewalls", topics: "ufw", exercise: "Allow SSH/HTTP", evening: "Block IP" },
+                    { day: 20, title: "SELinux", topics: "getenforce", exercise: "Permissive mode", evening: "Context" },
+                    { day: 21, title: "Weekly Project", topics: "Secure Server", exercise: "Hardened nginx", evening: "Monitoring" }
+                ]
+            },
+            {
+                week: 4, name: "Week 4: Containers & Automation", startDay: 22,
+                days: [
+                    { day: 22, title: "VirtualBox", topics: "VMs", exercise: "Create Rocky VM", evening: "Hypervisors" },
+                    { day: 23, title: "Docker", topics: "docker run", exercise: "Nginx container", evening: "VM vs container" },
+                    { day: 24, title: "Docker Volumes", topics: "volumes", exercise: "MySQL container", evening: "Compose" },
+                    { day: 25, title: "Git", topics: "commit, push", exercise: "Push to GitHub", evening: "Remote repo" },
+                    { day: 26, title: "Ansible", topics: "inventory", exercise: "Ping second VM", evening: "Playbook" },
+                    { day: 27, title: "Cloud", topics: "AWS EC2", exercise: "Launch Ubuntu", evening: "Security groups" },
+                    { day: 28, title: "Weekly Project", topics: "Docker LAMP", exercise: "WordPress stack", evening: "Backups" }
+                ]
+            }
+        ];
+
+        let completedDays = new Set();
+        let weeklyProjectStatus = [false, false, false, false];
+        let capstoneChecks = [false, false, false, false, false, false, false];
+        let quizScores = {};
+
+        function loadStorage() {
+            const stored = localStorage.getItem("linux_admin_completed");
+            if (stored) completedDays = new Set(JSON.parse(stored));
+            const storedWeekly = localStorage.getItem("linux_admin_weekly_projects");
+            if (storedWeekly) weeklyProjectStatus = JSON.parse(storedWeekly);
+            const storedCap = localStorage.getItem("linux_admin_capstone");
+            if (storedCap) capstoneChecks = JSON.parse(storedCap);
+            updateAllUI();
+        }
+
+        function saveCompleted() {
+            localStorage.setItem("linux_admin_completed", JSON.stringify([...completedDays]));
+            updateGlobalProgress();
+            updateAllUI();
+        }
+
+        function updateGlobalProgress() {
+            const totalDays = 28;
+            let completedCount = completedDays.size;
+            let weeklyCompleted = weeklyProjectStatus.filter(v => v === true).length;
+            const capstoneCount = capstoneChecks.filter(v => v === true).length;
+            let overallPercent = ((completedCount / totalDays) * 40) + ((weeklyCompleted / 4) * 30) + ((capstoneCount / 7) * 30);
+            overallPercent = Math.min(100, Math.floor(overallPercent));
+            document.getElementById("globalStats").innerHTML = `📊 Progress: ${overallPercent}%`;
+        }
+
+        function isDayUnlocked(weekIdx, dayIdx, dayNum) {
+            if (dayNum === 1) return true;
+            const prevDayNum = dayNum - 1;
+            for (let w = 0; w < weeksData.length; w++) {
+                for (let d = 0; d < weeksData[w].days.length; d++) {
+                    if (weeksData[w].days[d].day === prevDayNum)
+                        return completedDays.has(`${w}-${d}`);
+                }
+            }
+            return false;
+        }
+
+        function renderDashboard() {
+            const container = document.getElementById("weeksContainer");
+            if (!container) return;
+            container.innerHTML = "";
+            weeksData.forEach((week, wIdx) => {
+                const weekDiv = document.createElement("div");
+                weekDiv.className = "week-card";
+                weekDiv.innerHTML = `<div class="week-header"><span>📆 ${week.name}</span><span>Days ${week.startDay}-${week.startDay + 6}</span></div><div class="days-grid" id="week-${wIdx}-grid"></div>`;
+                container.appendChild(weekDiv);
+                const grid = weekDiv.querySelector(`.days-grid`);
+                week.days.forEach((day, dIdx) => {
+                    const unlocked = isDayUnlocked(wIdx, dIdx, day.day);
+                    const completed = completedDays.has(`${wIdx}-${dIdx}`);
+                    const card = document.createElement("div");
+                    card.className = `day-card ${unlocked ? 'unlocked' : 'locked'} ${completed ? 'completed' : ''}`;
+                    if (unlocked || completed) card.onclick = () => showDayDetails(wIdx, dIdx);
+                    card.innerHTML = `<div class="day-num"><span>Day ${day.day}</span><span>${completed ? '✅' : (unlocked ? '🔓' : '🔒')}</span></div><div class="day-title">${day.title}</div>`;
+                    grid.appendChild(card);
+                });
+            });
+        }
+
+        function showDayDetails(weekIdx, dayIdx) {
+            const day = weeksData[weekIdx].days[dayIdx];
+            const completed = completedDays.has(`${weekIdx}-${dayIdx}`);
+            const detailPanel = document.getElementById("dayDetailPanel");
+            if (!detailPanel) return;
+            document.getElementById("detailTitle").innerHTML = `📌 Day ${day.day}: ${day.title}`;
+            let content = `<div><strong>Topics:</strong> ${day.topics}</div><div class="exercise-box"><strong>Exercise:</strong><br>${day.exercise}</div><div class="exercise-box"><strong>Evening Task:</strong><br>${day.evening}</div>`;
+            if (!completed) content += `<button id="markCompleteDayBtn" class="complete-btn">✅ Mark Day ${day.day} Complete</button>`;
+            else content += `<button disabled>✔️ Completed</button>`;
+            document.getElementById("detailContent").innerHTML = content;
+            const btn = document.getElementById("markCompleteDayBtn");
+            if (btn) btn.onclick = () => { completedDays.add(`${weekIdx}-${dayIdx}`); saveCompleted(); showDayDetails(weekIdx, dayIdx); renderDashboard(); updateAnalytics(); };
+        }
+
+        function updateAnalytics() {
+            const heatmap = document.getElementById("heatmapContainer");
+            if (heatmap) {
+                heatmap.innerHTML = "";
+                for (let i = 1; i <= 28; i++) {
+                    let completed = false;
+                    for (let w = 0; w < weeksData.length; w++)
+                        for (let d = 0; d < weeksData[w].days.length; d++)
+                            if (weeksData[w].days[d].day === i && completedDays.has(`${w}-${d}`)) completed = true;
+                    const div = document.createElement("div");
+                    div.className = `heatmap-day ${completed ? 'completed' : ''}`;
+                    div.textContent = i;
+                    heatmap.appendChild(div);
+                }
+            }
+            const statsDiv = document.getElementById("analyticsStats");
+            if (statsDiv) statsDiv.innerHTML = `<p>✅ Completed Days: ${completedDays.size}/28</p><p>🔥 Current Streak: ${Math.floor(Math.random() * 7)} days</p><p>🏆 Weekly Projects: ${weeklyProjectStatus.filter(v => v).length}/4</p>`;
+            const leaderboard = document.getElementById("leaderboard");
+            if (leaderboard) leaderboard.innerHTML = `<p>🥇 You: ${completedDays.size} days completed</p><p>🥈 Avg peer progress: 12 days</p><p>🎯 Top 10% finish capstone!</p>`;
+        }
+
+        function renderQuizzes() {
+            const container = document.getElementById("quizContainer");
+            if (!container) return;
+            container.innerHTML = `<div class="week-card"><div class="week-header">Week 1 Quiz</div><div class="days-grid"><div class="quiz-option" data-q="1">Q1: Which command shows current directory? <strong>pwd</strong></div><div class="quiz-option" data-q="2">Q2: How to give execute permission? <strong>chmod +x</strong></div><button id="quizSubmit">Submit Week 1</button></div></div>`;
+            document.getElementById("quizSubmit")?.addEventListener("click", () => alert("Quiz submitted! Check answers in documentation."));
+        }
+
+        function renderScenarios() {
+            const container = document.getElementById("scenarioContainer");
+            if (container) container.innerHTML = `<div class="week-card"><div class="week-header">🔧 Scenario: "SSH connection refused"</div><div class="days-grid"><p>Your Steps: 1) Check sshd status 2) Verify firewall 3) Check port 22 listener</p><button onclick="alert('Solution: systemctl status sshd, ufw allow 22, ss -tuln')">Reveal Solution</button></div></div>`;
+        }
+
+        function setupTerminal() {
+            const runBtn = document.getElementById("runCommand");
+            const input = document.getElementById("terminalCommand");
+            const output = document.getElementById("terminalOutput");
+            if (runBtn) runBtn.onclick = () => {
+                const cmd = input.value.trim();
+                let response = "";
+                if (cmd === "ls") response = "Desktop  Documents  Downloads  linux_project";
+                else if (cmd === "pwd") response = "/home/user";
+                else if (cmd.startsWith("echo")) response = cmd.substring(5);
+                else if (cmd === "date") response = new Date().toString();
+                else if (cmd === "whoami") response = "linuxuser";
+                else if (cmd === "uname") response = "Linux";
+                else if (cmd === "cal") response = "    May 2026\nSu Mo Tu We Th Fr Sa\n 1  2\n3  4  5  6  7  8  9";
+                else if (cmd === "clear") { output.innerHTML = "<div>$ Terminal cleared</div>"; input.value = ""; return; }
+                else response = `Command '${cmd}' not found (simulated). Try: ls, pwd, echo, date, whoami, uname, cal`;
+                output.innerHTML += `<div>$ ${cmd}</div><div>${response}</div>`;
+                input.value = "";
+                output.scrollTop = output.scrollHeight;
+            };
+            const clearBtn = document.getElementById("clearTerminal");
+            if (clearBtn) clearBtn.onclick = () => { output.innerHTML = "<div>$ Terminal cleared</div>"; };
+        }
+
+        function setupCheatSheet() {
+            const genBtn = document.getElementById("generateCheatSheet");
+            if (genBtn) genBtn.onclick = () => {
+                let checks = document.querySelectorAll(".cheat-check:checked");
+                let content = "# LINUX CHEAT SHEET\n\n";
+                if (checks.length === 0) content += "Select topics above.";
+                else content += "Selected topics with commands...\n- ls, cd, pwd\n- chmod 755\n- ps aux | grep\n- ss -tuln\n- for loop examples";
+                document.getElementById("cheatOutput").style.display = "block";
+                document.getElementById("cheatOutput").innerText = content;
+            };
+        }
+
+        function initNavigation() {
+            const btns = document.querySelectorAll(".nav-btn");
+            const pages = ["dashboard", "weeklyprojects", "capstone", "terminal", "analytics", "community", "quizzes", "lab", "troubleshooting", "cheatsheet", "resources"];
+            btns.forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const pageId = btn.dataset.page;
+                    pages.forEach(p => document.getElementById(p + "Page").classList.remove("active-page"));
+                    document.getElementById(pageId + "Page").classList.add("active-page");
+                    btns.forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+                    if (pageId === "analytics") updateAnalytics();
+                    if (pageId === "quizzes") renderQuizzes();
+                    if (pageId === "troubleshooting") renderScenarios();
+                });
+            });
+        }
+
+        function updateAllUI() {
+            renderDashboard();
+            updateAnalytics();
+            renderQuizzes();
+            renderScenarios();
+            setupTerminal();
+            setupCheatSheet();
+            updateGlobalProgress();
+            document.getElementById("resetCapstoneBtn")?.addEventListener("click", () => { capstoneChecks.fill(false); saveCompleted(); updateAllUI(); });
+            document.querySelectorAll(".capstone-check").forEach((cb, i) => { cb.addEventListener("change", () => { capstoneChecks[i] = cb.checked; saveCompleted(); }); });
+            document.getElementById("copyLabCmd")?.addEventListener("click", () => { navigator.clipboard.writeText(document.querySelector("#labPage .code-block")?.innerText || ""); alert("Copied!"); });
+        }
+
+        loadStorage();
+        initNavigation();
+        if (weeksData[0]?.days[0]) showDayDetails(0, 0);
+    </script>
+</body>
+
+</html>

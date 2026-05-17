@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Linux Admin Bootcamp | 6-Week Learning Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f1f5f9;
+            color: #0f172a;
+            line-height: 1.5;
+        }
+
+        /* Navigation & Header */
+        .app-header {
+            background: #0f172a;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #3b82f6;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .logo p {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .progress-stats {
+            background: #1e293b;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        nav {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .nav-btn:hover:not(.active) {
+            background: #334155;
+            color: white;
+        }
+
+        /* main container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+            animation: fade 0.25s ease;
+        }
+
+        .page.active-page {
+            display: block;
+        }
+
+        @keyframes fade {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Week / Day Grid */
+        .week-card {
+            background: white;
+            border-radius: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .week-header {
+            background: #f8fafc;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .week-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .week-badge {
+            background: #e2e8f0;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .days-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 1.5rem;
+        }
+
+        .day-card {
+            background: #ffffff;
+            border-radius: 1rem;
+            border: 1px solid #e2e8f0;
+            width: calc(14% - 1rem);
+            min-width: 160px;
+            flex: 1 1 160px;
+            transition: all 0.2s;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .day-card.locked {
+            opacity: 0.6;
+            background: #f9f9fb;
+            cursor: not-allowed;
+            filter: grayscale(0.05);
+        }
+
+        .day-card.unlocked {
+            border-left: 5px solid #3b82f6;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .day-card.completed {
+            border-left: 5px solid #10b981;
+            background: #f0fdf4;
+        }
+
+        .day-num {
+            background: #f1f5f9;
+            padding: 0.5rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .day-title {
+            padding: 0.75rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .day-status {
+            font-size: 0.7rem;
+            padding: 0 0.75rem 0.75rem;
+            color: #475569;
+        }
+
+        /* detail panel */
+        .detail-panel {
+            background: white;
+            border-radius: 1.5rem;
+            margin-top: 2rem;
+            border: 1px solid #e2e8f0;
+            padding: 1.8rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .exercise-box,
+        .task-box {
+            background: #f8fafc;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .code-block {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            font-family: monospace;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        button {
+            background: #3b82f6;
+            border: none;
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        .complete-btn {
+            margin-top: 1rem;
+            background: #10b981;
+        }
+
+        .complete-btn.completed {
+            background: #475569;
+            cursor: default;
+        }
+
+        textarea,
+        input {
+            width: 100%;
+            padding: 0.7rem;
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            font-family: monospace;
+        }
+
+        .weekly-project {
+            background: #fef9e3;
+            border-left: 6px solid #f59e0b;
+            margin: 1rem 0;
+        }
+
+        footer {
+            text-align: center;
+            margin: 3rem 0 1rem;
+            color: #64748b;
+        }
+
+        @media (max-width: 800px) {
+            .days-grid {
+                gap: 0.8rem;
+            }
+
+            .day-card {
+                min-width: 130px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-header">
+        <div class="logo">
+            <h1>🐧 Linux Admin Bootcamp</h1>
+            <p>1.5 months • daily drills • projects • capstone</p>
+        </div>
+        <div class="progress-stats" id="globalStats">📊 Progress: 0%</div>
+    </div>
+
+    <nav
+        style="background: white; border-bottom: 1px solid #e2e8f0; padding: 0.75rem 2rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <button class="nav-btn active" data-page="dashboard">📅 Dashboard</button>
+        <button class="nav-btn" data-page="weeklyprojects">🏆 Weekly Projects</button>
+        <button class="nav-btn" data-page="capstone">🚀 Capstone Project</button>
+        <button class="nav-btn" data-page="resources">📚 Resources</button>
+    </nav>
+
+    <div class="container">
+        <!-- DASHBOARD PAGE (weeks + days) -->
+        <div id="dashboardPage" class="page active-page">
+            <div id="weeksContainer"></div>
+            <div id="dayDetailPanel" class="detail-panel">
+                <h3 id="detailTitle">✨ Select a day to start learning</h3>
+                <div id="detailContent">Click any unlocked day card above to see the daily exercise, evening task, and
+                    materials.</div>
+            </div>
+        </div>
+
+        <!-- WEEKLY PROJECTS PAGE -->
+        <div id="weeklyprojectsPage" class="page">
+            <h2>📌 Weekly Integration Projects</h2>
+            <p style="margin-bottom: 1rem;">Complete these each weekend to solidify your skills. Mark done after
+                finishing.</p>
+            <div id="weeklyProjectsList"></div>
+        </div>
+
+        <!-- CAPSTONE PAGE -->
+        <div id="capstonePage" class="page">
+            <h2>🚀 Production-Ready Linux Server – Capstone Project</h2>
+            <div style="background: #0f172a; color: #e2e8f0; padding: 1.5rem; border-radius: 1rem; margin: 1rem 0;">
+                <p><strong>🎯 Goal:</strong> Deploy a secure, monitored web app with database + automation + backups.
+                </p>
+                <p><strong>⏱️ Duration:</strong> 2 weeks after month 1</p>
+            </div>
+            <div class="exercise-box">
+                <h3>📋 Requirements Checklist</h3>
+                <ul style="margin-left: 1.5rem;" id="capstoneChecklist">
+                    <li><input type="checkbox" class="capstone-check"> Two VMs / EC2 instances (Web + DB)</li>
+                    <li><input type="checkbox" class="capstone-check"> SSH key-only & firewall rules</li>
+                    <li><input type="checkbox" class="capstone-check"> Ansible playbook for provisioning</li>
+                    <li><input type="checkbox" class="capstone-check"> Deploy Flask/PHP app that queries DB</li>
+                    <li><input type="checkbox" class="capstone-check"> Log rotation + monitoring script (CPU/disk)</li>
+                    <li><input type="checkbox" class="capstone-check"> Automated DB backups (cron)</li>
+                    <li><input type="checkbox" class="capstone-check"> Document restore procedure + troubleshooting</li>
+                </ul>
+                <button id="resetCapstoneBtn" style="background:#475569; margin-top: 1rem;">Reset Capstone
+                    Progress</button>
+            </div>
+            <div class="code-block">
+                📌 Example: Backup script snippet<br>
+                #!/bin/bash<br>
+                mysqldump -u root mydb > /backup/db/mydb_$(date +%Y%m%d).sql
+            </div>
+        </div>
+
+        <!-- RESOURCES PAGE -->
+        <div id="resourcesPage" class="page">
+            <h2>📖 Essential Linux Resources</h2>
+            <div style="display: grid; gap: 1rem; margin-top: 1rem;">
+                <div class="exercise-box"><strong>🔗 Linux Journey</strong><br>https://linuxjourney.com/</div>
+                <div class="exercise-box"><strong>🎮 OverTheWire
+                        Bandit</strong><br>https://overthewire.org/wargames/bandit/</div>
+                <div class="exercise-box"><strong>📘 ArchWiki</strong><br>https://wiki.archlinux.org/</div>
+                <div class="exercise-box"><strong>🐧 Learn Linux TV
+                        (YouTube)</strong><br>https://www.youtube.com/@LearnLinuxTV</div>
+                <div class="exercise-box"><strong>📦 KodeKloud Labs</strong><br>https://kodekloud.com/</div>
+            </div>
+        </div>
+    </div>
+    <footer>⚡ Break things, fix them, document everything. Unlock days sequentially by completing previous day.</footer>
+
+    <script>
+        // ---------- COURSE DATA (Month 1: 4 weeks, days 1-7 each week) --------------
+        const weeksData = [
+            {
+                week: 1, name: "Week 1: Linux Fundamentals & Filesystem", startDay: 1,
+                days: [
+                    { day: 1, title: "Terminal & Navigation", topics: "pwd, ls, cd, mkdir", exercise: "Create ~/linux_project/{docs,scripts,backup}. Use absolute/relative paths.", evening: "Explain difference between absolute vs relative path." },
+                    { day: 2, title: "File Operations", topics: "cp, mv, rm, cat, less", exercise: "Copy /etc/passwd to project folder. Display first 5 lines with head.", evening: "Create 10 files and delete specific range." },
+                    { day: 3, title: "Finding Things", topics: "find, grep, locate", exercise: "Find all .conf files in /etc modified in last 2 days. grep your history.", evening: "Find empty files in home dir." },
+                    { day: 4, title: "Permissions (chmod, chown)", topics: "users/groups, 755, 644", exercise: "Create user labuser, set file only they can read then modify.", evening: "Explain what chmod 755 script.sh does." },
+                    { day: 5, title: "Filesystem Hierarchy", topics: "/etc, /var, /proc", exercise: "Explore /proc/meminfo. Find partition mounted at /var.", evening: "List 5 logs in /var/log." },
+                    { day: 6, title: "Processes & Jobs", topics: "ps, top, kill, bg, fg", exercise: "Run sleep 500 in bg, bring fg, kill it.", evening: "Difference between daemon and foreground process." },
+                    { day: 7, title: "WEEK PROJECT: System Info Reporter", topics: "Scripting basics", exercise: "Write sysinfo.sh: user, uptime, memory, top3 processes.", evening: "Capture report.txt (weekly project)" }
+                ]
+            },
+            {
+                week: 2, name: "Week 2: Internals, Networking, Package Mgmt", startDay: 8,
+                days: [
+                    { day: 8, title: "Systemd & journalctl", topics: "systemctl, journalctl", exercise: "Check ssh status, view last 20 logs.", evening: "systemctl stop vs disable" },
+                    { day: 9, title: "Networking Basics", topics: "ip addr, ss, ping", exercise: "Find IP, check listening ports (ss -tuln)", evening: "What is a socket?" },
+                    { day: 10, title: "DNS & Connectivity", topics: "dig, curl, traceroute", exercise: "dig github.com, download file with wget", evening: "DNS resolution explanation" },
+                    { day: 11, title: "Package Management", topics: "apt/dnf", exercise: "Install htop, tree, nmap. Search for webserver.", evening: "Repositories and update vs upgrade" },
+                    { day: 12, title: "Disk Management", topics: "lsblk, df, du", exercise: "Check disk usage of homedir. Create dummy file.", evening: "Mount points explanation" },
+                    { day: 13, title: "Cron Scheduling", topics: "crontab", exercise: "Backup ~/linux_project to /tmp/backup every hour.", evening: "Write cron expression for 2:30am Monday" },
+                    { day: 14, title: "WEEK PROJECT: Personal Web Server", topics: "nginx/apache setup", exercise: "Install nginx port 8080, custom page, cron log visits.", evening: "submit screenshot/curl test" }
+                ]
+            },
+            {
+                week: 3, name: "Week 3: Bash Scripting & Security", startDay: 15,
+                days: [
+                    { day: 15, title: "Variables & Input", topics: "$1, read", exercise: "Script that prints Hello with argument.", evening: "Create file via user input." },
+                    { day: 16, title: "Conditionals", topics: "if, -f, -d", exercise: "Check existence of /etc/ssh/sshd_config and line count.", evening: "User existence check script." },
+                    { day: 17, title: "Loops", topics: "for, while", exercise: "Create 10 users via for loop. Read file line-by-line.", evening: "Ping servers from file." },
+                    { day: 18, title: "SSH Hardening & Keys", topics: "ssh-keygen, no password auth", exercise: "Generate key, disable password auth in VM.", evening: "Why disable root login." },
+                    { day: 19, title: "Firewalls (UFW)", topics: "ufw allow/deny", exercise: "Allow SSH and HTTP, enable UFW. Test with nmap.", evening: "Block IP with iptables." },
+                    { day: 20, title: "SELinux/AppArmor", topics: "getenforce, setenforce", exercise: "Set permissive mode, check logs.", evening: "SELinux context basics." },
+                    { day: 21, title: "WEEK PROJECT: Secure Web Server", topics: "Hardened nginx", exercise: "Non-root user, UFW only SSH/443, key auth, monitoring script.", evening: "Deliver secure server." }
+                ]
+            },
+            {
+                week: 4, name: "Week 4: Virtualization, Containers, Automation", startDay: 22,
+                days: [
+                    { day: 22, title: "VirtualBox/KVM", topics: "VMs, snapshots", exercise: "Create Rocky Linux VM. Bridge network.", evening: "Type1 vs Type2 hypervisor." },
+                    { day: 23, title: "Docker Basics", topics: "docker run, ps", exercise: "Run nginx container on host port 8080.", evening: "VM vs container diff." },
+                    { day: 24, title: "Docker Volumes & Networking", topics: "volumes, network", exercise: "MySQL container with persistent volume.", evening: "docker-compose yaml basics." },
+                    { day: 25, title: "Git Basics", topics: "init, add, commit, push", exercise: "Commit all scripts to GitHub repo.", evening: "Push your repo remote." },
+                    { day: 26, title: "Ansible Intro", topics: "inventory, ad-hoc", exercise: "Use ansible ping and install htop on second VM.", evening: "Write simple playbook." },
+                    { day: 27, title: "Cloud Linux (AWS EC2)", topics: "launch EC2, security groups", exercise: "Launch Ubuntu, install nginx, access via public IP.", evening: "Security group explanation." },
+                    { day: 28, title: "WEEK PROJECT: Dockerized LAMP", topics: "docker-compose, Wordpress", exercise: "Deploy wordpress with MySQL + nginx, backup cron.", evening: "Full compose stack running." }
+                ]
+            }
+        ];
+
+        // additional weekly projects descriptions for the separate page
+        const weeklyProjectsMeta = [
+            { week: 1, title: "System Information Reporter", desc: "Create a bash script that outputs system stats (users, memory, CPU processes) and schedules daily report." },
+            { week: 2, title: "Personal Web Server", desc: "Setup Nginx on custom port, build custom HTML page, cron job to log access counts." },
+            { week: 3, title: "Secure Web Server with Hardening", desc: "Non-root user, UFW, SSH key-only, monitoring script that auto-restarts Nginx." },
+            { week: 4, title: "Dockerized LAMP Stack", desc: "docker-compose WordPress + MySQL, persistent volumes, and automated DB backups." }
+        ];
+
+        // ----- progress storage -----
+        let completedDays = new Set(); // store "weekIdx-dayNum"
+        let weeklyProjectStatus = [false, false, false, false];
+        let capstoneChecks = [false, false, false, false, false, false, false];
+
+        function loadStorage() {
+            const stored = localStorage.getItem("linux_admin_completed");
+            if (stored) completedDays = new Set(JSON.parse(stored));
+            const storedWeekly = localStorage.getItem("linux_admin_weekly_projects");
+            if (storedWeekly) weeklyProjectStatus = JSON.parse(storedWeekly);
+            const storedCap = localStorage.getItem("linux_admin_capstone");
+            if (storedCap) capstoneChecks = JSON.parse(storedCap);
+            updateAllUI();
+        }
+
+        function saveCompleted() {
+            localStorage.setItem("linux_admin_completed", JSON.stringify([...completedDays]));
+            updateGlobalProgress();
+            updateAllUI();
+        }
+
+        function saveWeeklyProjects() {
+            localStorage.setItem("linux_admin_weekly_projects", JSON.stringify(weeklyProjectStatus));
+            updateAllUI();
+        }
+
+        function saveCapstone() {
+            localStorage.setItem("linux_admin_capstone", JSON.stringify(capstoneChecks));
+            updateAllUI();
+        }
+
+        function updateGlobalProgress() {
+            const totalDays = 28;
+            let completedCount = completedDays.size;
+            let weeklyCompleted = weeklyProjectStatus.filter(v => v === true).length;
+            const totalWeekly = 4;
+            const capstoneCount = capstoneChecks.filter(v => v === true).length;
+            const totalCap = 7;
+            let overallPercent = ((completedCount / totalDays) * 40) + ((weeklyCompleted / totalWeekly) * 30) + ((capstoneCount / totalCap) * 30);
+            overallPercent = Math.min(100, Math.floor(overallPercent));
+            document.getElementById("globalStats").innerHTML = `📊 Progress: ${overallPercent}%`;
+        }
+
+        function isDayUnlocked(weekIdx, dayLocalIdx, dayNumber) {
+            if (dayNumber === 1) return true; // first day of week1 always unlock
+            // Check previous day completed
+            const prevDayNum = dayNumber - 1;
+            // find which week/day combo for prevDayNum
+            for (let w = 0; w < weeksData.length; w++) {
+                const week = weeksData[w];
+                for (let d = 0; d < week.days.length; d++) {
+                    if (week.days[d].day === prevDayNum) {
+                        return completedDays.has(`${w}-${d}`);
+                    }
+                }
+            }
+            return false;
+        }
+
+        function renderDashboard() {
+            const container = document.getElementById("weeksContainer");
+            container.innerHTML = "";
+            weeksData.forEach((week, wIdx) => {
+                const weekDiv = document.createElement("div");
+                weekDiv.className = "week-card";
+                weekDiv.innerHTML = `
+                <div class="week-header">
+                    <span class="week-title">📆 ${week.name}</span>
+                    <span class="week-badge">Days ${week.startDay} - ${week.startDay + 6}</span>
+                </div>
+                <div class="days-grid" id="week-${wIdx}-grid"></div>
+            `;
+                container.appendChild(weekDiv);
+                const grid = weekDiv.querySelector(`.days-grid`);
+                week.days.forEach((day, dIdx) => {
+                    const dayNum = day.day;
+                    const unlocked = isDayUnlocked(wIdx, dIdx, dayNum);
+                    const completed = completedDays.has(`${wIdx}-${dIdx}`);
+                    let statusText = completed ? "✅ Done" : (unlocked ? "🔓 Unlocked" : "🔒 Locked");
+                    const card = document.createElement("div");
+                    card.className = `day-card ${unlocked ? 'unlocked' : 'locked'} ${completed ? 'completed' : ''}`;
+                    if (unlocked || completed) {
+                        card.style.cursor = "pointer";
+                        card.onclick = () => showDayDetails(wIdx, dIdx);
+                    } else {
+                        card.style.cursor = "not-allowed";
+                    }
+                    card.innerHTML = `
+                    <div class="day-num"><span>Day ${dayNum}</span> <span>${statusText}</span></div>
+                    <div class="day-title">📘 ${day.title}</div>
+                    <div class="day-status">${day.topics.substring(0, 40)}</div>
+                `;
+                    grid.appendChild(card);
+                });
+            });
+        }
+
+        function showDayDetails(weekIdx, dayIdx) {
+            const day = weeksData[weekIdx].days[dayIdx];
+            const completed = completedDays.has(`${weekIdx}-${dayIdx}`);
+            const detailPanel = document.getElementById("dayDetailPanel");
+            document.getElementById("detailTitle").innerHTML = `📌 Day ${day.day}: ${day.title}`;
+            let content = `
+            <div><strong>🎯 Topics:</strong> ${day.topics}</div>
+            <div class="exercise-box"><strong>📝 Daily Exercise:</strong><br>${day.exercise}</div>
+            <div class="exercise-box"><strong>🌙 Evening Task:</strong><br>${day.evening}</div>
+            ${day.day % 7 === 0 ? `<div class="exercise-box weekly-project"><strong>🏁 WEEKLY PROJECT BONUS:</strong> ${day.exercise} — Final deliverable for week.</div>` : ''}
+            <div class="code-block">💡 Pro-tip: Practice in your VM or WSL. Use 'man command' for details.</div>
+        `;
+            if (!completed) {
+                content += `<button id="markCompleteDayBtn" class="complete-btn">✅ Mark Day ${day.day} as Completed</button>`;
+            } else {
+                content += `<button class="complete-btn completed" disabled>✔️ Completed</button>`;
+            }
+            document.getElementById("detailContent").innerHTML = content;
+            const btn = document.getElementById("markCompleteDayBtn");
+            if (btn && !completed) {
+                btn.onclick = () => {
+                    completedDays.add(`${weekIdx}-${dayIdx}`);
+                    saveCompleted();
+                    renderDashboard();
+                    showDayDetails(weekIdx, dayIdx);
+                    updateWeeklyProjectCheckboxes();
+                };
+            }
+        }
+
+        function renderWeeklyProjectsPage() {
+            const container = document.getElementById("weeklyProjectsList");
+            container.innerHTML = "";
+            weeklyProjectsMeta.forEach((proj, idx) => {
+                const isDone = weeklyProjectStatus[idx];
+                const div = document.createElement("div");
+                div.className = "week-card";
+                div.innerHTML = `
+                <div class="week-header"><span class="week-title">🏁 Week ${proj.week} Project: ${proj.title}</span>
+                <button class="toggle-weekly" data-idx="${idx}" style="background: ${isDone ? '#10b981' : '#3b82f6'};">${isDone ? '✅ Completed' : '✔️ Mark Complete'}</button>
+                </div>
+                <div class="days-grid" style="padding:1rem"><p>${proj.desc}</p><p style="margin-top:0.5rem"><strong>Deliverable:</strong> functional script/server/compose stack + documentation.</p></div>
+            `;
+                container.appendChild(div);
+            });
+            document.querySelectorAll(".toggle-weekly").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const idx = parseInt(btn.dataset.idx);
+                    weeklyProjectStatus[idx] = !weeklyProjectStatus[idx];
+                    saveWeeklyProjects();
+                    renderWeeklyProjectsPage();
+                    updateGlobalProgress();
+                });
+            });
+        }
+
+        function updateWeeklyProjectCheckboxes() {
+            if (document.getElementById("weeklyProjectsList")) renderWeeklyProjectsPage();
+        }
+
+        function syncCapstoneUI() {
+            const checkboxes = document.querySelectorAll(".capstone-check");
+            if (checkboxes.length) {
+                checkboxes.forEach((cb, i) => {
+                    cb.checked = capstoneChecks[i] || false;
+                    cb.addEventListener("change", (e) => {
+                        capstoneChecks[i] = cb.checked;
+                        saveCapstone();
+                        updateGlobalProgress();
+                    });
+                });
+            }
+            const resetBtn = document.getElementById("resetCapstoneBtn");
+            if (resetBtn) {
+                resetBtn.onclick = () => {
+                    capstoneChecks.fill(false);
+                    saveCapstone();
+                    syncCapstoneUI();
+                    updateGlobalProgress();
+                };
+            }
+        }
+
+        function updateAllUI() {
+            renderDashboard();
+            renderWeeklyProjectsPage();
+            syncCapstoneUI();
+            updateGlobalProgress();
+        }
+
+        // navigation between pages
+        function initNavigation() {
+            const btns = document.querySelectorAll(".nav-btn");
+            const pages = {
+                dashboard: "dashboardPage",
+                weeklyprojects: "weeklyprojectsPage",
+                capstone: "capstonePage",
+                resources: "resourcesPage"
+            };
+            btns.forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const pageId = btn.dataset.page;
+                    Object.values(pages).forEach(pid => {
+                        document.getElementById(pid).classList.remove("active-page");
+                    });
+                    document.getElementById(pages[pageId]).classList.add("active-page");
+                    btns.forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+                    if (pageId === "weeklyprojects") renderWeeklyProjectsPage();
+                    if (pageId === "capstone") syncCapstoneUI();
+                });
+            });
+        }
+
+        loadStorage();
+        initNavigation();
+        // initial detail preview
+        if (weeksData[0]?.days[0]) showDayDetails(0, 0);
+    </script>
+</body>
+
+</html>
